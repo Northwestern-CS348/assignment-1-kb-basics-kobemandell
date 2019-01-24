@@ -4,6 +4,7 @@ from logical_classes import *
 
 
 class KnowledgeBase(object):
+
     def __init__(self, facts=[], rules=[]):
         self.facts = facts
         self.rules = rules
@@ -24,6 +25,14 @@ class KnowledgeBase(object):
             fact (Fact or Rule): Fact or Rule we're asserting in the format produced by read.py
         """
         print("Asserting {!r}".format(fact))
+
+        if isinstance(fact, Fact) and self.kb_ask(fact) == False:
+            self.facts.append(fact)
+            fact.asserted = True #not sure if I actually need this
+            #potentially find out if the fact is already in the knowledge base
+
+
+
         
     def kb_ask(self, fact):
         """Ask if a fact is in the KB
@@ -35,3 +44,18 @@ class KnowledgeBase(object):
             ListOfBindings|False - ListOfBindings if result found, False otherwise
         """
         print("Asking {!r}".format(fact))
+        bindings = ListOfBindings()
+        for f in self.facts:
+            bl = match(f.statement, fact.statement)
+            if bl:
+                bindings.add_bindings(bl)
+        leng = ListOfBindings.__len__(bindings)  # this line is good
+        print (leng)
+        if leng == 0:
+            return False
+        else:
+            return bindings
+
+
+
+
